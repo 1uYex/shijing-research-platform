@@ -1,0 +1,10 @@
+backend/.venv/
+backend/.env
+backend/storage/shijing_research.db
+backend/storage/uploads/*
+!backend/storage/uploads/.gitkeep
+frontend/.env
+frontend/.env.local
+frontend/node_modules/
+frontend/dist/
+.DS_Store

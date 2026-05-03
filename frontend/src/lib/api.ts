@@ -3,7 +3,7 @@ import type { ChapterItem, DocumentItem, Stats, VariantItem } from "../types/dom
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
 if (!apiBaseUrl) {
-  throw new Error("Missing VITE_API_BASE_URL. Please set it in frontend/.env or Vercel Environment Variables.");
+  throw new Error("Missing VITE_API_BASE_URL. Please set it in frontend/.env or the production environment.");
 }
 
 export const API_BASE_URL = apiBaseUrl.replace(/\/$/, "");
@@ -19,6 +19,12 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 
 export function getStats() {
   return request<Stats>("/stats");
+}
+
+export function seedDemoData() {
+  return request<{ ok: boolean; created: Stats; message: string }>("/seed-demo", {
+    method: "POST",
+  });
 }
 
 export function getDocuments() {

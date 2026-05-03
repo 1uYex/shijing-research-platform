@@ -20,6 +20,10 @@ function uniqueById<T extends { id: number }>(items: T[]) {
   return Array.from(seen.values());
 }
 
+function truncateText(text: string, maxLength: number) {
+  return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
+}
+
 function nodeKey(node: SelectedNode) {
   return `${node.type}:${node.id}`;
 }
@@ -34,6 +38,7 @@ function NodeButton({
   dimmed,
   title,
   meta,
+  details,
   onClick,
 }: {
   active: boolean;
@@ -41,12 +46,13 @@ function NodeButton({
   dimmed: boolean;
   title: string;
   meta: string;
+  details?: string[];
   onClick: () => void;
 }) {
   const nodeClass = active
-    ? "border-[#111827] bg-[#1F2937] text-white shadow-[0_0_0_3px_rgba(17,24,39,0.12),0_8px_18px_rgba(15,23,42,0.12)]"
+    ? "border-[#111827] bg-[#1F2937] text-white shadow-[0_0_0_3px_rgba(17,24,39,0.16),0_8px_18px_rgba(15,23,42,0.14)]"
     : related
-      ? "border-[#334155] bg-[#F1F5F9] text-[#111827] shadow-[0_1px_0_rgba(15,23,42,0.04)]"
+      ? "border-[#1F2937] bg-[#E5E7EB] text-[#111827] shadow-[0_1px_0_rgba(15,23,42,0.06)]"
       : dimmed
         ? "border-[#CBD5E1] bg-[#F8FAFC] text-slate-600 opacity-45"
         : "border-[#94A3B8] bg-[#F8FAFC] text-[#1F2937]";
@@ -58,6 +64,13 @@ function NodeButton({
     >
       <div className="text-sm font-bold leading-5">{title}</div>
       <div className={`mt-2 text-xs leading-5 ${active ? "text-white/80" : related ? "text-slate-600" : "text-slate-500"}`}>{meta}</div>
+      {details && details.length > 0 && (
+        <div className={`mt-3 space-y-1 text-xs leading-5 ${active ? "text-white/75" : related ? "text-slate-700" : "text-slate-500"}`}>
+          {details.map((detail) => (
+            <div key={detail}>{detail}</div>
+          ))}
+        </div>
+      )}
     </button>
   );
 }
@@ -133,6 +146,18 @@ export function OverviewPage({ chapters }: OverviewPageProps) {
           {selectedChapter.argument && (
             <p className="mt-3 text-sm leading-6 text-stone-600">{selectedChapter.argument}</p>
           )}
+          <EvidenceChain
+            title="证据链说明"
+            lines={[
+              `该章节由 ${selectedChapter.documents.length} 条文献和 ${selectedChapter.variants.length} 条异文共同支撑。`,
+              selectedChapter.documents.length
+                ? `文献依据包括：${selectedChapter.documents.map((document) => document.title).join("；")}。`
+                : "尚未绑定文献依据。",
+              selectedChapter.variants.length
+                ? `异文证据包括：${selectedChapter.variants.map((variant) => variant.poem_title).join("；")}。`
+                : "尚未绑定异文证据。",
+            ]}
+          />
           <RelationList title="文献支撑" items={selectedChapter.documents} empty="该章节尚未绑定文献" kind="document" />
           <RelationList title="异文证据" items={selectedChapter.variants} empty="该章节尚未绑定异文" kind="variant" />
         </>
@@ -147,9 +172,21 @@ export function OverviewPage({ chapters }: OverviewPageProps) {
             {selectedDocument.title}
           </div>
           <p className="mt-3 text-sm leading-6 text-stone-600">
-            {[selectedDocument.author, selectedDocument.year, selectedDocument.source_type].filter(Boolean).join(" · ") ||
+            {[selectedDocument.material_type, selectedDocument.author, selectedDocument.year].filter(Boolean).join(" · ") ||
               "未填写作者、年代或类型"}
           </p>
+          <EvidenceChain
+            title="证据链说明"
+            lines={[
+              `该文献当前支撑 ${relatedChapters.length} 个论文章节。`,
+              relatedChapters.length
+                ? `相关章节包括：${relatedChapters.map((chapter) => chapter.title).join("；")}。`
+                : "尚未被任何章节绑定。",
+              selectedDocument.citation_format
+                ? `参考文献格式：${selectedDocument.citation_format}`
+                : "尚未填写规范参考文献格式。",
+            ]}
+          />
           <ChapterLinks title="支撑的论文章节" chapters={relatedChapters} />
         </>
       );
@@ -169,6 +206,23 @@ export function OverviewPage({ chapters }: OverviewPageProps) {
           {selectedVariant.explanation && (
             <p className="mt-3 text-sm leading-6 text-stone-600">{selectedVariant.explanation}</p>
           )}
+          <EvidenceChain
+            title="证据链说明"
+            lines={[
+              `该异文当前作为 ${relatedChapters.length} 个章节的证据。`,
+              relatedChapters.length
+                ? `进入的论证部分包括：${relatedChapters.map((chapter) => chapter.title).join("；")}。`
+                : "尚未被任何章节绑定。",
+              [
+                selectedVariant.source_material && `来源材料：${selectedVariant.source_material}`,
+                selectedVariant.region && `地域：${selectedVariant.region}`,
+                selectedVariant.period && `时代：${selectedVariant.period}`,
+                selectedVariant.confidence_level && `可信度：${selectedVariant.confidence_level}`,
+              ]
+                .filter(Boolean)
+                .join("；") || "来源、地域、时代和可信度信息尚未完整填写。",
+            ]}
+          />
           <ChapterLinks title="关联的论证部分" chapters={relatedChapters} />
         </>
       );
@@ -213,6 +267,7 @@ export function OverviewPage({ chapters }: OverviewPageProps) {
                       dimmed={hasSelection && !relatedChapterIds.has(chapter.id)}
                       title={chapter.title}
                       meta={`章节 ${chapter.order_index} · 文献 ${chapter.documents.length} · 异文 ${chapter.variants.length}`}
+                      details={chapter.argument ? [truncateText(chapter.argument, 48)] : undefined}
                       onClick={() => selectNode({ type: "chapter", id: chapter.id })}
                     />
                   ))}
@@ -234,7 +289,11 @@ export function OverviewPage({ chapters }: OverviewPageProps) {
                         related={relatedDocumentIds.has(document.id)}
                         dimmed={hasSelection && !relatedDocumentIds.has(document.id)}
                         title={document.title}
-                        meta={[document.author, document.year, document.source_type].filter(Boolean).join(" · ") || "文献"}
+                        meta={document.material_type || document.source_type || "文献"}
+                        details={[
+                          [document.author, document.year].filter(Boolean).join(" · ") || "作者、年份未填写",
+                          document.publication ? `来源：${document.publication}` : "来源未填写",
+                        ]}
                         onClick={() => selectNode({ type: "document", id: document.id })}
                       />
                     ))
@@ -258,6 +317,11 @@ export function OverviewPage({ chapters }: OverviewPageProps) {
                         dimmed={hasSelection && !relatedVariantIds.has(variant.id)}
                         title={variant.poem_title}
                         meta={variant.variant_type}
+                        details={[
+                          variant.source_material ? `来源：${variant.source_material}` : "来源未填写",
+                          [variant.region, variant.period].filter(Boolean).join(" · ") || "地域、时代未填写",
+                          variant.confidence_level ? `可信度：${variant.confidence_level}` : "可信度未填写",
+                        ]}
                         onClick={() => selectNode({ type: "variant", id: variant.id })}
                       />
                     ))
@@ -322,7 +386,7 @@ function Legend() {
         label="当前选中节点"
         className="border-[#111827] bg-[#1F2937] shadow-[0_0_0_3px_rgba(17,24,39,0.12)]"
       />
-      <LegendItem label="关联节点" className="border-[#334155] bg-[#F1F5F9]" />
+      <LegendItem label="关联节点" className="border-[#1F2937] bg-[#E5E7EB]" />
       <LegendItem label="弱化节点" className="border-[#CBD5E1] bg-[#F8FAFC] opacity-60" />
     </div>
   );
@@ -333,6 +397,19 @@ function LegendItem({ label, className }: { label: string; className: string }) 
     <div className="inline-flex items-center gap-2 rounded-md border border-[#CBD5E1] bg-white px-2 py-1">
       <span className={`h-3 w-5 rounded-sm border ${className}`} />
       <span>{label}</span>
+    </div>
+  );
+}
+
+function EvidenceChain({ title, lines }: { title: string; lines: string[] }) {
+  return (
+    <div className="mt-5 rounded-md border border-[#CBD5E1] bg-[#F8FAFC] p-3">
+      <div className="text-xs font-semibold tracking-normal text-stone-500">{title}</div>
+      <div className="mt-2 space-y-2 text-sm leading-6 text-stone-700">
+        {lines.map((line) => (
+          <p key={line}>{line}</p>
+        ))}
+      </div>
     </div>
   );
 }
@@ -366,10 +443,21 @@ function RelationList({
               </div>
               <div className="mt-1 text-xs text-stone-500">
                 {kind === "document"
-                  ? [(item as DocumentItem).author, (item as DocumentItem).year, (item as DocumentItem).source_type]
+                  ? [
+                      (item as DocumentItem).material_type || (item as DocumentItem).source_type,
+                      (item as DocumentItem).author,
+                      (item as DocumentItem).year,
+                    ]
                       .filter(Boolean)
                       .join(" · ") || "文献"
-                  : (item as VariantItem).variant_type}
+                  : [
+                      (item as VariantItem).source_material,
+                      (item as VariantItem).region,
+                      (item as VariantItem).period,
+                      `可信度：${(item as VariantItem).confidence_level || "未填写"}`,
+                    ]
+                      .filter(Boolean)
+                      .join(" · ") || (item as VariantItem).variant_type}
               </div>
             </div>
           ))

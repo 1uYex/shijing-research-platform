@@ -1,9 +1,11 @@
-import { BookOpen, FileText, GitBranch, Layers3, Network } from "lucide-react";
+import { BookOpen, Database, FileText, GitBranch, Layers3, Network } from "lucide-react";
+import { useState } from "react";
 import { PageHeader } from "../components/PageHeader";
 import type { Stats } from "../types/domain";
 
 type DashboardProps = {
   stats: Stats | null;
+  onSeedDemo: () => Promise<void>;
 };
 
 const cards = [
@@ -12,7 +14,21 @@ const cards = [
   { label: "章节数", key: "chapters", icon: Layers3 },
 ] as const;
 
-export function Dashboard({ stats }: DashboardProps) {
+export function Dashboard({ stats, onSeedDemo }: DashboardProps) {
+  const [seeding, setSeeding] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+
+  async function handleSeedDemo() {
+    setSeeding(true);
+    setMessage(null);
+    try {
+      await onSeedDemo();
+      setMessage("示例数据已导入或已存在，可前往文献库、异文数据和关系总览查看。");
+    } finally {
+      setSeeding(false);
+    }
+  }
+
   return (
     <>
       <PageHeader
@@ -32,6 +48,20 @@ export function Dashboard({ stats }: DashboardProps) {
             <p className="mt-3 max-w-3xl text-sm leading-7 text-stone-600">
               平台不是普通文献库，而是围绕“文献—异文—论证—论文结构”的研究过程建立数据关联，便于答辩展示项目创新点与后续扩展方向。
             </p>
+            <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <button className="button-primary" onClick={handleSeedDemo} disabled={seeding}>
+                <Database size={17} />
+                {seeding ? "导入中" : "导入示例数据"}
+              </button>
+              <p className="text-xs leading-5 text-stone-500">
+                示例内容均以“【示例数据】”标注，仅用于展示功能，不代表真实研究结论。
+              </p>
+            </div>
+            {message && (
+              <div className="mt-3 rounded-md border border-stone-200 bg-stone-50 px-3 py-2 text-sm text-stone-700">
+                {message}
+              </div>
+            )}
           </div>
           <div className="surface p-4">
             <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-stone-900">

@@ -30,6 +30,13 @@ class Document(Base):
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
     file_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
     file_path: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    publication: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    volume_issue: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    pages: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    identifier: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    citation_format: Mapped[str | None] = mapped_column(Text, nullable=True)
+    material_type: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    reliability_note: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     chapters: Mapped[list["Chapter"]] = relationship(
         secondary=chapter_documents,
@@ -46,6 +53,13 @@ class Variant(Base):
     excavated_text: Mapped[str] = mapped_column(Text, nullable=False)
     variant_type: Mapped[str] = mapped_column(String(120), nullable=False)
     explanation: Mapped[str | None] = mapped_column(Text, nullable=True)
+    source_material: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    slip_or_page: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    received_version: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    region: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    period: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    evidence_note: Mapped[str | None] = mapped_column(Text, nullable=True)
+    confidence_level: Mapped[str | None] = mapped_column(String(20), nullable=True)
 
     chapters: Mapped[list["Chapter"]] = relationship(
         secondary=chapter_variants,

@@ -63,8 +63,46 @@ export function DocumentsPage({ documents, onCreate, onDelete }: DocumentsPagePr
               </select>
             </label>
             <label className="block">
+              <span className="label">文献类型</span>
+              <select className="field mt-1" name="material_type" defaultValue="传世文献">
+                <option>传世文献</option>
+                <option>出土文献整理</option>
+                <option>专著</option>
+                <option>期刊论文</option>
+                <option>工具书</option>
+                <option>外文文献</option>
+                <option>其他</option>
+              </select>
+            </label>
+            <label className="block">
+              <span className="label">刊物 / 出版社 / 来源</span>
+              <input className="field mt-1" name="publication" placeholder="如：中华书局 / 文学遗产" />
+            </label>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="block">
+                <span className="label">卷期</span>
+                <input className="field mt-1" name="volume_issue" placeholder="如：2024年第3期" />
+              </label>
+              <label className="block">
+                <span className="label">页码</span>
+                <input className="field mt-1" name="pages" placeholder="如：45-58" />
+              </label>
+            </div>
+            <label className="block">
+              <span className="label">DOI / ISBN / CNKI / 检索标识</span>
+              <input className="field mt-1" name="identifier" />
+            </label>
+            <label className="block">
+              <span className="label">规范参考文献格式</span>
+              <textarea className="field mt-1 min-h-24" name="citation_format" placeholder="如：作者. 题名[J]. 刊物, 年份(期): 页码." />
+            </label>
+            <label className="block">
               <span className="label">说明</span>
               <textarea className="field mt-1 min-h-24" name="notes" placeholder="版本、出处、使用价值等" />
+            </label>
+            <label className="block">
+              <span className="label">真实性、版本或使用说明</span>
+              <textarea className="field mt-1 min-h-24" name="reliability_note" />
             </label>
             <label className="block">
               <span className="label">本地文件</span>
@@ -89,13 +127,37 @@ export function DocumentsPage({ documents, onCreate, onDelete }: DocumentsPagePr
                     <div className="mt-2 flex flex-wrap gap-2 text-xs text-stone-500">
                       {document.author && <span>{document.author}</span>}
                       {document.year && <span>{document.year}</span>}
-                      {document.source_type && (
+                      {document.material_type && (
                         <span className="tag">
-                          {document.source_type}
+                          {document.material_type}
                         </span>
                       )}
+                      {!document.material_type && document.source_type && <span className="tag">{document.source_type}</span>}
+                      {document.publication && <span>{document.publication}</span>}
                     </div>
+                    <div className="mt-4 grid gap-3 text-sm lg:grid-cols-2">
+                      <InfoRow label="刊物 / 出版社 / 来源" value={document.publication} />
+                      <InfoRow label="卷期 / 页码" value={[document.volume_issue, document.pages].filter(Boolean).join(" · ")} />
+                      <InfoRow label="检索标识" value={document.identifier} />
+                      <InfoRow label="原类型字段" value={document.source_type} />
+                    </div>
+                    {document.citation_format && (
+                      <div className="surface mt-3 p-3">
+                        <div className="label">规范参考文献格式</div>
+                        <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-stone-800">
+                          {document.citation_format}
+                        </p>
+                      </div>
+                    )}
                     {document.notes && <p className="mt-3 text-sm leading-6 text-stone-600">{document.notes}</p>}
+                    {document.reliability_note && (
+                      <div className="surface mt-3 p-3">
+                        <div className="label">真实性、版本或使用说明</div>
+                        <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-stone-700">
+                          {document.reliability_note}
+                        </p>
+                      </div>
+                    )}
                     {document.file_url && (
                       <a
                         className="button-secondary mt-4"
@@ -118,5 +180,14 @@ export function DocumentsPage({ documents, onCreate, onDelete }: DocumentsPagePr
         </section>
       </div>
     </>
+  );
+}
+
+function InfoRow({ label, value }: { label: string; value?: string | null }) {
+  return (
+    <div className="surface p-3">
+      <div className="label">{label}</div>
+      <div className="mt-1 text-sm text-stone-800">{value || "未填写"}</div>
+    </div>
   );
 }

@@ -1,5 +1,7 @@
 backend/.venv/
 backend/.env
+__pycache__/
+*.pyc
 backend/storage/shijing_research.db
 backend/storage/uploads/*
 !backend/storage/uploads/.gitkeep

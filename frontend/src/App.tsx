@@ -11,6 +11,7 @@ import {
   getDocuments,
   getStats,
   getVariants,
+  seedDemoData,
 } from "./lib/api";
 import { ChaptersPage } from "./pages/ChaptersPage";
 import { Dashboard } from "./pages/Dashboard";
@@ -50,7 +51,15 @@ function App() {
 
   const content = useMemo(() => {
     if (activePage === "dashboard") {
-      return <Dashboard stats={stats} />;
+      return (
+        <Dashboard
+          stats={stats}
+          onSeedDemo={async () => {
+            await seedDemoData();
+            await refreshAll();
+          }}
+        />
+      );
     }
     if (activePage === "documents") {
       return (

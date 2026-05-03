@@ -1,5 +1,5 @@
 import { FormEvent, useMemo, useState } from "react";
-import { Plus, Search, Trash2, X } from "lucide-react";
+import { Plus, Trash2, X } from "lucide-react";
 import { EmptyState } from "../components/EmptyState";
 import { PageHeader } from "../components/PageHeader";
 import type { VariantItem } from "../types/domain";
@@ -200,15 +200,12 @@ export function VariantsPage({ variants, onCreate, onDelete }: VariantsPageProps
             <div className="mt-4 grid gap-4">
               <label className="block">
                 <span className="label">关键词搜索</span>
-                <div className="relative mt-1">
-                  <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" size={16} />
-                  <input
-                    className="field pl-9"
-                    value={filters.keyword}
-                    onChange={(event) => updateFilter("keyword", event.target.value)}
-                    placeholder="搜索篇目、传世文本、出土文本、说明、释读依据"
-                  />
-                </div>
+                <input
+                  className="field mt-1"
+                  value={filters.keyword}
+                  onChange={(event) => updateFilter("keyword", event.target.value)}
+                  placeholder="搜索篇目、传世文本、出土文本、说明、释读依据"
+                />
               </label>
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 <FilterSelect

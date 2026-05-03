@@ -1,4 +1,4 @@
-import { Download, Plus, Search, Trash2, X } from "lucide-react";
+import { Download, Plus, Trash2, X } from "lucide-react";
 import { FormEvent, useMemo, useState } from "react";
 import { EmptyState } from "../components/EmptyState";
 import { PageHeader } from "../components/PageHeader";
@@ -17,14 +17,12 @@ export function DocumentsPage({ documents, onCreate, onDelete }: DocumentsPagePr
     keyword: "",
     material_type: "",
     year: "",
-    source_type: "",
   });
 
   const filterOptions = useMemo(
     () => ({
       materialTypes: uniqueOptions(documents.map((document) => document.material_type)),
       years: uniqueOptions(documents.map((document) => document.year)),
-      sourceTypes: uniqueOptions(documents.map((document) => document.source_type)),
     }),
     [documents],
   );
@@ -47,8 +45,7 @@ export function DocumentsPage({ documents, onCreate, onDelete }: DocumentsPagePr
       return (
         matchesKeyword &&
         matchesFilter(document.material_type, filters.material_type) &&
-        matchesFilter(document.year, filters.year) &&
-        matchesFilter(document.source_type, filters.source_type)
+        matchesFilter(document.year, filters.year)
       );
     });
   }, [documents, filters]);
@@ -64,7 +61,6 @@ export function DocumentsPage({ documents, onCreate, onDelete }: DocumentsPagePr
       keyword: "",
       material_type: "",
       year: "",
-      source_type: "",
     });
   }
 
@@ -106,16 +102,6 @@ export function DocumentsPage({ documents, onCreate, onDelete }: DocumentsPagePr
                 <input className="field mt-1" name="year" placeholder="唐 / 1999" />
               </label>
             </div>
-            <label className="block">
-              <span className="label">类型</span>
-              <select className="field mt-1" name="source_type" defaultValue="传世文献">
-                <option>传世文献</option>
-                <option>出土材料</option>
-                <option>现代论文</option>
-                <option>专著</option>
-                <option>工具书</option>
-              </select>
-            </label>
             <label className="block">
               <span className="label">文献类型</span>
               <select className="field mt-1" name="material_type" defaultValue="传世文献">
@@ -192,18 +178,15 @@ export function DocumentsPage({ documents, onCreate, onDelete }: DocumentsPagePr
             <div className="mt-4 space-y-4">
               <label className="block">
                 <span className="label">关键词搜索</span>
-                <div className="relative mt-1">
-                  <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" size={16} />
-                  <input
-                    className="field pl-9"
-                    value={filters.keyword}
-                    onChange={(event) => updateFilter("keyword", event.target.value)}
-                    placeholder="搜索题名、作者、刊物、参考文献格式或说明"
-                  />
-                </div>
+                <input
+                  className="field mt-1"
+                  value={filters.keyword}
+                  onChange={(event) => updateFilter("keyword", event.target.value)}
+                  placeholder="搜索题名、作者、刊物、参考文献格式或说明"
+                />
               </label>
 
-              <div className="grid gap-4 md:grid-cols-3">
+              <div className="grid gap-4 md:grid-cols-2">
                 <FilterSelect
                   label="文献类型"
                   value={filters.material_type}
@@ -215,12 +198,6 @@ export function DocumentsPage({ documents, onCreate, onDelete }: DocumentsPagePr
                   value={filters.year}
                   options={filterOptions.years}
                   onChange={(value) => updateFilter("year", value)}
-                />
-                <FilterSelect
-                  label="原类型字段"
-                  value={filters.source_type}
-                  options={filterOptions.sourceTypes}
-                  onChange={(value) => updateFilter("source_type", value)}
                 />
               </div>
             </div>
@@ -244,14 +221,12 @@ export function DocumentsPage({ documents, onCreate, onDelete }: DocumentsPagePr
                           {document.material_type}
                         </span>
                       )}
-                      {!document.material_type && document.source_type && <span className="tag">{document.source_type}</span>}
                       {document.publication && <span>{document.publication}</span>}
                     </div>
                     <div className="mt-4 grid gap-3 text-sm lg:grid-cols-2">
                       <InfoRow label="刊物 / 出版社 / 来源" value={document.publication} />
                       <InfoRow label="卷期 / 页码" value={[document.volume_issue, document.pages].filter(Boolean).join(" · ")} />
                       <InfoRow label="检索标识" value={document.identifier} />
-                      <InfoRow label="原类型字段" value={document.source_type} />
                     </div>
                     {document.citation_format && (
                       <div className="surface mt-3 p-3">

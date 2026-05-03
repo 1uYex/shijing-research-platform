@@ -1,5 +1,5 @@
-import { Download, Plus, Trash2 } from "lucide-react";
-import { FormEvent, useState } from "react";
+import { Download, Plus, Search, Trash2, X } from "lucide-react";
+import { FormEvent, useMemo, useState } from "react";
 import { EmptyState } from "../components/EmptyState";
 import { PageHeader } from "../components/PageHeader";
 import { API_BASE_URL } from "../lib/api";
@@ -13,6 +13,60 @@ type DocumentsPageProps = {
 
 export function DocumentsPage({ documents, onCreate, onDelete }: DocumentsPageProps) {
   const [submitting, setSubmitting] = useState(false);
+  const [filters, setFilters] = useState({
+    keyword: "",
+    material_type: "",
+    year: "",
+    source_type: "",
+  });
+
+  const filterOptions = useMemo(
+    () => ({
+      materialTypes: uniqueOptions(documents.map((document) => document.material_type)),
+      years: uniqueOptions(documents.map((document) => document.year)),
+      sourceTypes: uniqueOptions(documents.map((document) => document.source_type)),
+    }),
+    [documents],
+  );
+
+  const filteredDocuments = useMemo(() => {
+    const keyword = filters.keyword.trim().toLowerCase();
+
+    return documents.filter((document) => {
+      const keywordFields = [
+        document.title,
+        document.author,
+        document.publication,
+        document.citation_format,
+        document.notes,
+      ];
+      const matchesKeyword =
+        !keyword ||
+        keywordFields.some((field) => field?.toLowerCase().includes(keyword));
+
+      return (
+        matchesKeyword &&
+        matchesFilter(document.material_type, filters.material_type) &&
+        matchesFilter(document.year, filters.year) &&
+        matchesFilter(document.source_type, filters.source_type)
+      );
+    });
+  }, [documents, filters]);
+
+  const hasActiveFilters = Object.values(filters).some(Boolean);
+
+  function updateFilter(key: keyof typeof filters, value: string) {
+    setFilters((current) => ({ ...current, [key]: value }));
+  }
+
+  function clearFilters() {
+    setFilters({
+      keyword: "",
+      material_type: "",
+      year: "",
+      source_type: "",
+    });
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -115,11 +169,69 @@ export function DocumentsPage({ documents, onCreate, onDelete }: DocumentsPagePr
           </div>
         </form>
 
-        <section className="space-y-3">
+        <section className="space-y-4">
+          <div className="panel p-5">
+            <div className="flex flex-col gap-3 border-b border-stone-200 pb-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 className="text-base font-semibold text-stone-950">文献检索</h2>
+                <p className="mt-1 text-sm text-stone-500">
+                  共 {documents.length} 条，当前显示 {filteredDocuments.length} 条
+                </p>
+              </div>
+              <button
+                className="button-secondary w-full justify-center sm:w-auto"
+                type="button"
+                onClick={clearFilters}
+                disabled={!hasActiveFilters}
+              >
+                <X size={16} />
+                清空筛选
+              </button>
+            </div>
+
+            <div className="mt-4 space-y-4">
+              <label className="block">
+                <span className="label">关键词搜索</span>
+                <div className="relative mt-1">
+                  <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" size={16} />
+                  <input
+                    className="field pl-9"
+                    value={filters.keyword}
+                    onChange={(event) => updateFilter("keyword", event.target.value)}
+                    placeholder="搜索题名、作者、刊物、参考文献格式或说明"
+                  />
+                </div>
+              </label>
+
+              <div className="grid gap-4 md:grid-cols-3">
+                <FilterSelect
+                  label="文献类型"
+                  value={filters.material_type}
+                  options={filterOptions.materialTypes}
+                  onChange={(value) => updateFilter("material_type", value)}
+                />
+                <FilterSelect
+                  label="年份"
+                  value={filters.year}
+                  options={filterOptions.years}
+                  onChange={(value) => updateFilter("year", value)}
+                />
+                <FilterSelect
+                  label="原类型字段"
+                  value={filters.source_type}
+                  options={filterOptions.sourceTypes}
+                  onChange={(value) => updateFilter("source_type", value)}
+                />
+              </div>
+            </div>
+          </div>
+
           {documents.length === 0 ? (
             <EmptyState title="尚未添加文献" description="先录入一条文献，之后可以在论文章节中绑定它。" />
+          ) : filteredDocuments.length === 0 ? (
+            <EmptyState title="没有匹配的文献" description="请调整关键词或筛选条件后再试。" />
           ) : (
-            documents.map((document) => (
+            filteredDocuments.map((document) => (
               <article key={document.id} className="panel p-5">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   <div>
@@ -189,5 +301,41 @@ function InfoRow({ label, value }: { label: string; value?: string | null }) {
       <div className="label">{label}</div>
       <div className="mt-1 text-sm text-stone-800">{value || "未填写"}</div>
     </div>
+  );
+}
+
+function uniqueOptions(values: Array<string | null | undefined>) {
+  return Array.from(
+    new Set(values.map((value) => value?.trim()).filter((value): value is string => Boolean(value))),
+  ).sort((a, b) => a.localeCompare(b, "zh-CN"));
+}
+
+function matchesFilter(value: string | null | undefined, filter: string) {
+  return !filter || value === filter;
+}
+
+function FilterSelect({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  options: string[];
+  onChange: (value: string) => void;
+}) {
+  return (
+    <label className="block">
+      <span className="label">{label}</span>
+      <select className="field mt-1" value={value} onChange={(event) => onChange(event.target.value)}>
+        <option value="">全部</option>
+        {options.map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </select>
+    </label>
   );
 }

@@ -114,12 +114,12 @@ function App() {
   return (
     <Layout activePage={activePage} onNavigate={setActivePage}>
       {error && (
-        <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="mb-4 rounded-xl border border-red-200 bg-red-50/90 px-4 py-3 text-sm text-red-700 shadow-sm">
           后端连接失败：{error}
         </div>
       )}
       {loading ? (
-        <div className="rounded-md border border-stone-200 bg-white p-8 text-sm text-stone-600 shadow-sm">加载中</div>
+        <div className="panel p-8 text-sm text-stone-600">加载中</div>
       ) : (
         content
       )}

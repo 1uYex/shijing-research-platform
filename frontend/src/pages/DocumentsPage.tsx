@@ -88,7 +88,7 @@ export function DocumentsPage({ documents, onCreate, onDelete }: DocumentsPagePr
         description="集中收录版本文献、考古报告、研究论文与工具书，为后续章节论证提供可追踪的学术依据。"
       />
       <div className="grid gap-6 xl:grid-cols-[380px_1fr]">
-        <form onSubmit={handleSubmit} className="panel p-5">
+        <form onSubmit={handleSubmit} className="paper-texture panel p-5">
           <h2 className="text-base font-semibold text-stone-950">添加文献</h2>
           <p className="mt-1 text-sm leading-6 text-stone-500">记录题名、作者、类型与本地文件，形成可引用的文献节点。</p>
           <div className="mt-4 space-y-4">
@@ -232,7 +232,7 @@ export function DocumentsPage({ documents, onCreate, onDelete }: DocumentsPagePr
             <EmptyState title="没有匹配的文献" description="请调整关键词或筛选条件后再试。" />
           ) : (
             filteredDocuments.map((document) => (
-              <article key={document.id} className="panel p-5">
+              <article key={document.id} className="panel elevate-hover p-5">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   <div>
                     <div className="text-lg font-semibold text-stone-950">{document.title}</div>

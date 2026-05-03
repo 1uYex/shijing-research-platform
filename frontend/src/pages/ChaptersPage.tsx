@@ -51,7 +51,7 @@ export function ChaptersPage({ chapters, documents, variants, onCreate, onDelete
         description="以论文章节为骨架组织研究问题，并把相关文献与异文证据绑定到具体论证位置。"
       />
       <div className="grid gap-6 xl:grid-cols-[420px_1fr]">
-        <form onSubmit={handleSubmit} className="panel p-5">
+        <form onSubmit={handleSubmit} className="paper-texture panel p-5">
           <h2 className="text-base font-semibold text-stone-950">创建章节</h2>
           <p className="mt-1 text-sm leading-6 text-stone-500">章节用于承载论证，同时连接其依据的文献与异文。</p>
           <div className="mt-4 space-y-4">
@@ -114,7 +114,7 @@ export function ChaptersPage({ chapters, documents, variants, onCreate, onDelete
             <EmptyState title="尚未创建章节" description="章节会把文献和异文连接成论文论证结构。" />
           ) : (
             chapters.map((chapter) => (
-              <article key={chapter.id} className="panel p-5">
+              <article key={chapter.id} className="panel elevate-hover p-5">
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <div className="text-xs font-semibold text-stone-500">第 {chapter.order_index} 节点</div>

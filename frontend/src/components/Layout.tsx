@@ -19,18 +19,22 @@ const navItems = [
 
 export function Layout({ activePage, onNavigate, children }: LayoutProps) {
   return (
-    <div className="min-h-screen bg-[#f7f7f5]">
-      <aside className="fixed inset-y-0 left-0 hidden w-72 border-r border-stone-200 bg-white px-5 py-5 lg:block">
-        <div className="flex items-center gap-3 px-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-md border border-stone-200 bg-stone-950 text-white">
+    <div className="min-h-screen">
+      <aside className="fixed inset-y-0 left-0 hidden w-72 border-r border-stone-200/70 bg-[#fbf7ef]/88 px-5 py-5 shadow-[16px_0_48px_rgba(67,56,43,0.08)] backdrop-blur-xl lg:block">
+        <div className="paper-texture rounded-2xl border border-stone-200/70 bg-white/68 p-4 shadow-sm">
+          <div className="flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#b99b63]/40 bg-gradient-to-br from-[#111827] via-[#233246] to-[#314f60] text-white shadow-lg shadow-slate-900/10">
             <FileText size={20} />
           </div>
           <div>
-            <div className="text-sm font-bold leading-5 text-stone-950">文献—异文—论证结构</div>
-            <div className="text-xs text-stone-500">《诗经》研究支持平台</div>
+            <div className="text-sm font-bold leading-5 text-stone-950">诗经文本流变研究支持平台</div>
+            <div className="mt-0.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#8a6f3c]">
+              Digital Humanities
+            </div>
+          </div>
           </div>
         </div>
-        <div className="mt-6 rounded-md border border-stone-200 bg-stone-50 p-3 text-xs leading-5 text-stone-600">
+        <div className="mt-6 rounded-2xl border border-[#d7c7aa]/70 bg-[#fffaf2]/70 p-4 text-xs leading-5 text-stone-600 shadow-sm">
           面向大学生创新创业项目答辩，展示文本流变研究中的材料、证据与论文结构关系。
         </div>
         <nav className="mt-8 space-y-1">
@@ -41,13 +45,13 @@ export function Layout({ activePage, onNavigate, children }: LayoutProps) {
               <button
                 key={item.key}
                 onClick={() => onNavigate(item.key)}
-                className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm font-semibold transition ${
+                className={`group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-semibold transition duration-200 ${
                   active
-                    ? "bg-stone-900 text-white"
-                    : "text-stone-600 hover:bg-stone-100 hover:text-stone-950"
+                    ? "bg-gradient-to-r from-[#111827] to-[#314f60] text-white shadow-lg shadow-slate-900/12"
+                    : "text-stone-600 hover:bg-white/76 hover:text-stone-950 hover:shadow-sm"
                 }`}
               >
-                <Icon size={18} />
+                <Icon className="transition group-hover:scale-105" size={18} />
                 {item.label}
               </button>
             );
@@ -56,10 +60,12 @@ export function Layout({ activePage, onNavigate, children }: LayoutProps) {
       </aside>
 
       <div className="lg:pl-72">
-        <header className="sticky top-0 z-10 border-b border-stone-200 bg-white/95 px-4 py-3 backdrop-blur lg:hidden">
+        <header className="sticky top-0 z-10 border-b border-stone-200/70 bg-[#fbf7ef]/92 px-4 py-3 shadow-sm backdrop-blur-xl lg:hidden">
           <div className="mb-3 flex items-center gap-2 text-sm font-bold text-stone-900">
-            <FileText size={18} />
-            文献—异文—论证结构
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#111827] to-[#314f60] text-white">
+              <FileText size={17} />
+            </span>
+            诗经文本流变研究支持平台
           </div>
           <div className="flex gap-2 overflow-x-auto pb-1">
             {navItems.map((item) => {
@@ -69,8 +75,8 @@ export function Layout({ activePage, onNavigate, children }: LayoutProps) {
                 <button
                   key={item.key}
                   onClick={() => onNavigate(item.key)}
-                  className={`flex shrink-0 items-center gap-2 rounded-md px-3 py-2 text-xs font-semibold ${
-                    active ? "bg-stone-900 text-white" : "border border-stone-200 bg-white text-stone-700"
+                  className={`flex shrink-0 items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold transition ${
+                    active ? "bg-[#1f2937] text-white shadow-md" : "border border-stone-200/80 bg-white/78 text-stone-700"
                   }`}
                 >
                   <Icon size={15} />
@@ -80,7 +86,7 @@ export function Layout({ activePage, onNavigate, children }: LayoutProps) {
             })}
           </div>
         </header>
-        <main className="mx-auto max-w-7xl px-4 py-7 sm:px-6 lg:px-8">{children}</main>
+        <main className="page-shell mx-auto max-w-7xl px-4 py-7 sm:px-6 lg:px-8">{children}</main>
       </div>
     </div>
   );

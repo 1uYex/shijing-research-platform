@@ -50,17 +50,17 @@ function NodeButton({
   onClick: () => void;
 }) {
   const nodeClass = active
-    ? "border-[#111827] bg-[#1F2937] text-white shadow-[0_0_0_3px_rgba(17,24,39,0.16),0_8px_18px_rgba(15,23,42,0.14)]"
+    ? "border-[#0f172a] bg-gradient-to-br from-[#111827] via-[#243145] to-[#314f60] text-white shadow-[0_0_0_4px_rgba(49,79,96,0.16),0_18px_34px_rgba(15,23,42,0.22)]"
     : related
-      ? "border-[#1F2937] bg-[#E5E7EB] text-[#111827] shadow-[0_1px_0_rgba(15,23,42,0.06)]"
+      ? "border-[#334155] bg-gradient-to-br from-[#f8fafc] to-[#eef3f2] text-[#111827] shadow-[0_10px_22px_rgba(51,65,85,0.12)]"
       : dimmed
-        ? "border-[#CBD5E1] bg-[#F8FAFC] text-slate-600 opacity-45"
-        : "border-[#94A3B8] bg-[#F8FAFC] text-[#1F2937]";
+        ? "border-[#cbd5e1] bg-[#f7f7f2] text-slate-600 opacity-55"
+        : "border-[#a8a29e] bg-white/80 text-[#1F2937] shadow-sm";
 
   return (
     <button
       onClick={onClick}
-      className={`w-full rounded-md border p-3 text-left transition ${active ? "" : "hover:border-[#475569] hover:bg-[#F1F5F9]"} ${nodeClass}`}
+      className={`w-full rounded-xl border p-3 text-left transition duration-200 ${active ? "" : "hover:-translate-y-0.5 hover:border-[#475569] hover:bg-[#fffaf2]"} ${nodeClass}`}
     >
       <div className="text-sm font-bold leading-5">{title}</div>
       <div className={`mt-2 text-xs leading-5 ${active ? "text-white/80" : related ? "text-slate-600" : "text-slate-500"}`}>{meta}</div>
@@ -199,7 +199,7 @@ export function OverviewPage({ chapters }: OverviewPageProps) {
             <GitBranch size={17} />
             {selectedVariant.poem_title}
           </div>
-          <div className="mt-3 rounded-md bg-stone-50 p-3 text-sm leading-6 text-stone-700">
+          <div className="mt-3 rounded-2xl border border-stone-200/70 bg-[#f8faf7] p-3 text-sm leading-6 text-stone-700 shadow-sm">
             <p>传世：{selectedVariant.received_text}</p>
             <p className="mt-2">出土：{selectedVariant.excavated_text}</p>
           </div>
@@ -249,15 +249,15 @@ export function OverviewPage({ chapters }: OverviewPageProps) {
           </section>
 
           <section className="grid gap-5 xl:grid-cols-[1fr_360px]">
-            <div className="rounded-md border border-[#CBD5E1] bg-[#F8FAFC] p-5 shadow-sm">
-              <div className="mb-4 flex flex-col gap-3 border-b border-[#CBD5E1] pb-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="paper-texture rounded-2xl border border-[#c8d1d6] bg-[#f8faf7]/82 p-5 shadow-[0_20px_48px_rgba(51,65,85,0.1)] backdrop-blur">
+              <div className="relative z-[1] mb-4 flex flex-col gap-3 border-b border-[#c8d1d6] pb-4 lg:flex-row lg:items-center lg:justify-between">
                 <div className="flex items-center gap-2 text-sm font-semibold text-stone-950">
                   <Network size={17} />
                   章节—文献—异文关系网络
                 </div>
                 <Legend />
               </div>
-              <div className="grid gap-4 lg:grid-cols-[1fr_90px_1fr_90px_1fr]">
+              <div className="relative z-[1] grid gap-4 lg:grid-cols-[1fr_90px_1fr_90px_1fr]">
                 <NodeColumn title="章节节点" icon={<Layers3 size={16} />}>
                   {chapters.map((chapter) => (
                     <NodeButton
@@ -330,8 +330,8 @@ export function OverviewPage({ chapters }: OverviewPageProps) {
               </div>
             </div>
 
-            <aside className="panel p-5">
-              <div className="mb-4 text-xs font-semibold tracking-normal text-stone-500">
+            <aside className="panel p-5 shadow-[0_20px_48px_rgba(67,56,43,0.1)]">
+              <div className="mb-4 rounded-xl border border-[#d7c7aa]/70 bg-[#fffaf2]/72 px-3 py-2 text-xs font-semibold tracking-normal text-stone-500">
                 当前选择 · {nodeKey(selected)}
               </div>
               {renderDetail()}
@@ -345,7 +345,7 @@ export function OverviewPage({ chapters }: OverviewPageProps) {
 
 function Metric({ label, value }: { label: string; value: number }) {
   return (
-    <div className="surface p-4">
+    <div className="surface elevate-hover p-4">
       <div className="text-xs font-semibold text-stone-500">{label}</div>
       <div className="mt-2 text-2xl font-bold text-stone-950">{value}</div>
     </div>
@@ -355,7 +355,7 @@ function Metric({ label, value }: { label: string; value: number }) {
 function NodeColumn({ title, icon, children }: { title: string; icon: ReactNode; children: ReactNode }) {
   return (
     <div>
-      <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-stone-900">
+      <div className="mb-3 flex items-center gap-2 rounded-full border border-stone-200/80 bg-white/62 px-3 py-2 text-sm font-semibold text-stone-900 shadow-sm">
         {icon}
         {title}
       </div>
@@ -368,11 +368,11 @@ function RelationRail({ label, active }: { label: string; active: boolean }) {
   return (
     <div className="hidden items-start justify-center pt-12 lg:flex">
       <div
-        className={`w-full rounded-md border px-2 py-3 text-center transition ${
-          active ? "border-[#475569] bg-[#E2E8F0]" : "border-[#CBD5E1] bg-[#F8FAFC] opacity-50"
+        className={`w-full rounded-xl border px-2 py-3 text-center transition duration-200 ${
+          active ? "border-[#475569] bg-gradient-to-r from-[#e7edf0] to-[#f4efe5] shadow-sm" : "border-[#CBD5E1] bg-white/58 opacity-65"
         }`}
       >
-        <div className={`mx-auto w-full rounded-full ${active ? "h-1 bg-[#334155]" : "h-0.5 bg-[#CBD5E1]"}`} />
+        <div className={`mx-auto w-full rounded-full transition-all ${active ? "h-1.5 bg-gradient-to-r from-[#334155] via-[#57534e] to-[#8a6f3c]" : "h-0.5 bg-[#CBD5E1]"}`} />
         <div className={`mt-2 text-xs font-semibold ${active ? "text-[#1F2937]" : "text-slate-500"}`}>{label}</div>
       </div>
     </div>
@@ -394,7 +394,7 @@ function Legend() {
 
 function LegendItem({ label, className }: { label: string; className: string }) {
   return (
-    <div className="inline-flex items-center gap-2 rounded-md border border-[#CBD5E1] bg-white px-2 py-1">
+    <div className="inline-flex items-center gap-2 rounded-full border border-[#CBD5E1] bg-white/78 px-2 py-1 shadow-sm">
       <span className={`h-3 w-5 rounded-sm border ${className}`} />
       <span>{label}</span>
     </div>
@@ -403,8 +403,8 @@ function LegendItem({ label, className }: { label: string; className: string }) 
 
 function EvidenceChain({ title, lines }: { title: string; lines: string[] }) {
   return (
-    <div className="mt-5 rounded-md border border-[#CBD5E1] bg-[#F8FAFC] p-3">
-      <div className="text-xs font-semibold tracking-normal text-stone-500">{title}</div>
+    <div className="mt-5 rounded-2xl border border-[#c8d1d6] bg-gradient-to-br from-[#f8fafc] to-[#fffaf2] p-4 shadow-sm">
+      <div className="text-xs font-semibold tracking-normal text-[#57534e]">{title}</div>
       <div className="mt-2 space-y-2 text-sm leading-6 text-stone-700">
         {lines.map((line) => (
           <p key={line}>{line}</p>
@@ -415,7 +415,7 @@ function EvidenceChain({ title, lines }: { title: string; lines: string[] }) {
 }
 
 function MutedBox({ children }: { children: ReactNode }) {
-  return <div className="rounded-md border border-dashed border-stone-300 bg-stone-50 p-3 text-sm text-stone-500">{children}</div>;
+  return <div className="rounded-xl border border-dashed border-stone-300 bg-white/62 p-3 text-sm text-stone-500">{children}</div>;
 }
 
 function RelationList({
@@ -434,10 +434,10 @@ function RelationList({
       <div className="text-xs font-semibold tracking-normal text-stone-500">{title}</div>
       <div className="mt-2 space-y-2">
         {items.length === 0 ? (
-          <p className="rounded-md bg-stone-50 p-3 text-sm text-stone-500">{empty}</p>
+          <p className="rounded-xl bg-[#f8faf7] p-3 text-sm text-stone-500">{empty}</p>
         ) : (
           items.map((item) => (
-            <div key={`${kind}-${item.id}`} className="rounded-md bg-stone-50 p-3">
+            <div key={`${kind}-${item.id}`} className="rounded-xl border border-stone-200/70 bg-[#f8faf7] p-3 shadow-sm">
               <div className="text-sm font-semibold text-stone-900">
                 {kind === "document" ? (item as DocumentItem).title : (item as VariantItem).poem_title}
               </div>
@@ -473,10 +473,10 @@ function ChapterLinks({ title, chapters }: { title: string; chapters: ChapterIte
       <div className="text-xs font-semibold tracking-normal text-stone-500">{title}</div>
       <div className="mt-2 space-y-2">
         {chapters.length === 0 ? (
-          <p className="rounded-md bg-stone-50 p-3 text-sm text-stone-500">暂无章节引用</p>
+          <p className="rounded-xl bg-[#f8faf7] p-3 text-sm text-stone-500">暂无章节引用</p>
         ) : (
           chapters.map((chapter) => (
-            <div key={chapter.id} className="rounded-md bg-stone-50 p-3">
+            <div key={chapter.id} className="rounded-xl border border-stone-200/70 bg-[#f8faf7] p-3 shadow-sm">
               <div className="text-sm font-semibold text-stone-900">{chapter.title}</div>
               {chapter.argument && <p className="mt-2 text-xs leading-5 text-stone-600">{chapter.argument}</p>}
             </div>

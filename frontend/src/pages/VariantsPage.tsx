@@ -109,7 +109,7 @@ export function VariantsPage({ variants, onCreate, onDelete }: VariantsPageProps
         description="记录篇目、传世文本与出土文本之间的差异，把零散异文整理为可绑定、可说明的文本证据。"
       />
       <div className="grid gap-6 xl:grid-cols-[420px_1fr]">
-        <form onSubmit={handleSubmit} className="panel p-5">
+        <form onSubmit={handleSubmit} className="paper-texture panel p-5">
           <h2 className="text-base font-semibold text-stone-950">录入异文</h2>
           <p className="mt-1 text-sm leading-6 text-stone-500">一条异文就是一个可溯源、可考释、可被章节论证引用的证据单元。</p>
           <div className="mt-4 space-y-4">
@@ -251,7 +251,7 @@ export function VariantsPage({ variants, onCreate, onDelete }: VariantsPageProps
             <EmptyState title="没有匹配的异文" description="请调整关键词或筛选条件后再试。" />
           ) : (
             filteredVariants.map((variant) => (
-              <article key={variant.id} className="panel p-5">
+              <article key={variant.id} className="panel elevate-hover p-5">
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
